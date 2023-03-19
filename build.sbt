@@ -4,21 +4,23 @@
 
 import ReleaseTransformations._
 
+val commonName = "prisma-client-scala"
+val commonSettings = Seq(
+  organization := "com.github.halfmatthalfcat",
+  scalaVersion := "2.12.16",
+)
+
 lazy val root = (project in file("."))
   .enablePlugins(SbtPlugin)
+  .settings(name := commonName)
+
+lazy val plugin = (project in file("plugin"))
+  .settings(commonSettings: _*)
   .settings(
-    name := "prisma-client-scala",
-    organization := "com.github.halfmatthalfcat",
-    scalaVersion := "2.12.16",
-    sbtPlugin := true,
-    scriptedLaunchOpts := {
-      scriptedLaunchOpts.value ++
-        Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
-    },
-    scriptedBufferLog := false,
+    name := s"$commonName-plugin",
     crossVersion := CrossVersion.binary,
-    crossScalaVersions := Seq(
-      scalaVersion.value,
+      crossScalaVersions := Seq (
+      scalaVersion.value
     ),
     pluginCrossBuild / sbtVersion := {
       scalaBinaryVersion.value match {
@@ -26,13 +28,6 @@ lazy val root = (project in file("."))
         case "2.12" => "1.8.2"
       }
     },
-    libraryDependencies ++= Seq(
-      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % "2.21.3",
-      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.21.3" % Provided,
-      "com.lihaoyi" %% "os-lib" % "0.9.1",
-      "com.softwaremill.sttp.client3" %% "core" % "3.8.13",
-      "com.softwaremill.sttp.client3" %% "jsoniter" % "3.8.13",
-    ),
     releaseCrossBuild := true,
     releaseProcess := Seq[ReleaseStep](
       checkSnapshotDependencies,
@@ -50,24 +45,52 @@ lazy val root = (project in file("."))
     ),
     pomExtra :=
       <url>https://www.github.com/halfmatthalfcat/prisma-scala-client</url>
-      <licenses>
-        <license>
-          <name>MIT</name>
-          <distribution>repo</distribution>
-        </license>
-      </licenses>
-      <scm>
-        <url>git@github.com:halfmatthalfcat/prisma-scala-client.git</url>
-        <connection>scm:git:git@github.com:halfmatthalfcat/prisma-scala-client.git</connection>
-      </scm>
-      <developers>
-        <developer>
-          <id>halfmatthalfcat</id>
-          <name>Matt Oliver</name>
-          <url>https://www.github.com/halfmatthalfcat</url>
-        </developer>
-      </developers>,
+        <licenses>
+          <license>
+            <name>MIT</name>
+            <distribution>repo</distribution>
+          </license>
+        </licenses>
+        <scm>
+          <url>git@github.com:halfmatthalfcat/prisma-scala-client.git</url>
+          <connection>scm:git:git@github.com:halfmatthalfcat/prisma-scala-client.git</connection>
+        </scm>
+        <developers>
+          <developer>
+            <id>halfmatthalfcat</id>
+            <name>Matt Oliver</name>
+            <url>https://www.github.com/halfmatthalfcat</url>
+          </developer>
+        </developers>,
     publishMavenStyle := true,
     publishTo := sonatypePublishToBundle.value,
     resolvers ++= Seq(DefaultMavenRepository)
+  )
+
+lazy val sqlite = (project in file("sqlite"))
+  .enablePlugins(PrismaPlugin)
+  .settings(commonSettings: _*)
+  .settings(
+    name := s"$commonName-sqlite"
+  )
+
+lazy val postgres = (project in file("postgres"))
+  .enablePlugins(PrismaPlugin)
+  .settings(commonSettings: _*)
+  .settings(
+    name := s"$commonName-postgres"
+  )
+
+lazy val mssql = (project in file("mssql"))
+  .enablePlugins(PrismaPlugin)
+  .settings(commonSettings: _*)
+  .settings(
+    name := s"$commonName-mssql"
+  )
+
+lazy val mongodb = (project in file("mongodb"))
+  .enablePlugins(PrismaPlugin)
+  .settings(commonSettings: _*)
+  .settings(
+    name := s"$commonName-mongodb"
   )

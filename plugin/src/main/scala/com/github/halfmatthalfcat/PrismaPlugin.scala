@@ -16,7 +16,7 @@ object PrismaPlugin
   override def trigger = allRequirements
 
   private[this] def prismaGenerateTask = Def.taskDyn {
-    implicit val logger: Logger = streams.value.log(pluginName)
+    implicit val logger: Logger = streams.value.log
     implicit val config: PrismaConfiguration = PrismaConfiguration(
       outDir = prismaOutDir.value
     )

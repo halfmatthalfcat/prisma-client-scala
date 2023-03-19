@@ -65,34 +65,34 @@ case class Binary(name: String) {
     logger: Logger
   ): Option[File] = {
     val platform = getPlatform
-    val compressedDestPath = getDestPath(platform)
-    val uncompressedDestPath = s"$compressedDestPath${getBinaryUrlExt(platform)}"
+    val uncompressedDestPath = getDestPath(platform)
+    val compressedDestPath = s"$uncompressedDestPath${getBinaryUrlExt(platform)}"
 
     val exists = os.exists(Path(uncompressedDestPath))
 
     if (exists) {
-      logger.debug(s"Binary $name exists, continuing.")
+      logger.debug(s"[prisma] Binary $name exists, continuing.")
       Some(new File(uncompressedDestPath))
     } else {
       val compressedFile = new File(compressedDestPath)
       val binaryUrl = Uri.unsafeParse(getBinaryUrl(platform))
 
-      logger.debug(s"Downloading binary $name (${config.engineVersion}) as ${getBinaryUrl(platform)}")
+      logger.debug(s"[prisma] Downloading binary $name (${config.engineVersion}) as ${getBinaryUrl(platform)}")
 
       val (downloadNs, response) = Profile.fn(http.send(basicRequest.get(binaryUrl).response(asFile(compressedFile))))
 
       response.body match {
         case Right(file) =>
-          logger.debug(s"Successfully downloaded binary $name (${config.engineVersion}) from ${config.engineUrl} (${TimeUnit.NANOSECONDS.toMillis(downloadNs)}ms)")
+          logger.debug(s"[prisma] Successfully downloaded binary $name (${config.engineVersion}) from ${config.engineUrl} (${TimeUnit.NANOSECONDS.toMillis(downloadNs)}ms)")
           val (uncompressNs, _) = Profile.fn(os.write(
             Path(uncompressedDestPath),
             new GZIPInputStream(new FileInputStream(file))
           ))
           os.remove(Path(compressedDestPath))
-          logger.debug(s"Successfully uncompressed binary $name (${TimeUnit.NANOSECONDS.toMillis(uncompressNs)}ms)")
+          logger.debug(s"[prisma] Successfully uncompressed binary $name (${TimeUnit.NANOSECONDS.toMillis(uncompressNs)}ms)")
           Some(new File(uncompressedDestPath))
         case Left(_) =>
-          logger.error(s"Failed to download binary $name (${config.engineVersion}) from ${config.engineUrl} with status ${response.code.code}")
+          logger.error(s"[prisma] Failed to download binary $name (${config.engineVersion}) from ${config.engineUrl} with status ${response.code.code}")
           Option.empty
       }
     }
