@@ -6,15 +6,14 @@ import sys.process.*
 import os.*
 import com.github.halfmatthalfcat.util.Profile
 import sbt.Logger
-import sttp.client3.{HttpClientSyncBackend, asFile, basicRequest}
+import sttp.client3.{asFile, basicRequest}
 import sttp.model.Uri
 
 import java.io.{File, FileInputStream}
 import java.util.concurrent.TimeUnit
 import java.util.zip.GZIPInputStream
 
-case class Binary(name: String) {
-  private[this] lazy val http = HttpClientSyncBackend()
+case class EngineBinary(name: String) extends Binary {
   private[this] lazy val idRegex = """(?m)^ID="?([^"\n]*)"?""".r
   private[this] lazy val idLikeRegex = """(?m)^ID_LIKE="?([^"\n]*)"?""".r
 
@@ -27,29 +26,17 @@ case class Binary(name: String) {
       case alpine if alpine == "alpine" => "alpine"
       case rhel if (
         rhel.contains("centos") ||
-        rhel.contains("fedora") ||
-        rhel.contains("rhel") ||
-        rhel == "fedora"
-      ) => "rhel"
+          rhel.contains("fedora") ||
+          rhel.contains("rhel") ||
+          rhel == "fedora"
+        ) => "rhel"
       case debian if (
         debian.contains("debian") ||
-        debian.contains("ubuntu") ||
-        debian == "debian"
-      ) => "debian"
+          debian.contains("ubuntu") ||
+          debian == "debian"
+        ) => "debian"
     }.getOrElse("debian")
   }
-  private[this] def getPlatform: String = sys
-    .props
-    .get("os.name")
-    .map(_.toLowerCase)
-    .getOrElse(sys.error("Unknown OS")) match {
-      case mac if mac.contains("mac") => "darwin"
-      case win if win.contains("win") => "windows"
-      case linux if linux.contains("linux") => findLinuxDistro()
-    }
-
-  private[this] def getBinaryUrlExt(platform: String): String =
-    if (platform == "windows") { ".exe.gz" } else { ".gz" }
 
   private[this] def getBinaryUrl(platform: String)(
     implicit config: PrismaConfiguration
@@ -59,12 +46,16 @@ case class Binary(name: String) {
     implicit config: PrismaConfiguration
   ): String = s"${config.outDir}/${config.engineVersion}/prisma-$name-$platform"
 
+
   def ensure()(
     implicit
     config: PrismaConfiguration,
-    logger: Logger
+    logger: Logger,
   ): Option[File] = {
-    val platform = getPlatform
+    val platform = getPlatform match {
+      case "linux" => findLinuxDistro()
+      case other => other
+    }
     val uncompressedDestPath = getDestPath(platform)
     val compressedDestPath = s"$uncompressedDestPath${getBinaryUrlExt(platform)}"
 

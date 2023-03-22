@@ -1,8 +1,8 @@
 package com.github.halfmatthalfcat
 
 import com.github.halfmatthalfcat.binary.Binaries
-import sbt.{AutoPlugin, Def, *}
-import sbt.Keys.*
+import sbt.{AutoPlugin, Def, _}
+import sbt.Keys._
 
 object PrismaPlugin
   extends AutoPlugin
@@ -27,6 +27,6 @@ object PrismaPlugin
 
   override lazy val projectSettings: Seq[Def.Setting[?]] = super.projectSettings ++ Seq(
     prismaOutDir := s"${(Compile / target).value.getAbsolutePath}/prisma",
-    prismaGenerate := prismaGenerateTask.value,
+    prisma := prismaGenerateTask.value,
   )
 }
