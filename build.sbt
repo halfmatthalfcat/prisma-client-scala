@@ -11,13 +11,24 @@ val commonSettings = Seq(
 )
 
 lazy val root = (project in file("."))
-  .enablePlugins(SbtPlugin)
   .settings(name := commonName)
 
-lazy val plugin = (project in file("plugin"))
+lazy val `plugin-generator` = (project in file("plugin-generator"))
   .settings(commonSettings: _*)
   .settings(
-    name := s"$commonName-plugin",
+    name := s"$commonName-plugin-generator"
+  )
+
+lazy val `plugin-sbt` = (project in file("plugin-sbt"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := s"$commonName-plugin-sbt",
+    Compile / unmanagedJars += (`plugin-generator` / Compile / packageBin).value,
+    scriptedLaunchOpts := {
+      scriptedLaunchOpts.value ++
+        Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
+    },
+    scriptedBufferLog := false,
     crossVersion := CrossVersion.binary,
       crossScalaVersions := Seq (
       scalaVersion.value
