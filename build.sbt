@@ -5,25 +5,35 @@
 import ReleaseTransformations._
 
 val commonName = "prisma-client-scala"
-val commonSettings = Seq(
-  organization := "com.github.halfmatthalfcat",
-  scalaVersion := "2.12.16",
-)
+val commonOrganization = "com.github.halfmatthalfcat"
 
 lazy val root = (project in file("."))
   .settings(name := commonName)
 
 lazy val `plugin-generator` = (project in file("plugin-generator"))
-  .settings(commonSettings: _*)
+  .enablePlugins(BuildInfoPlugin)
   .settings(
-    name := s"$commonName-plugin-generator"
+    name := s"$commonName-plugin-generator",
+    organization := commonOrganization,
+    scalaVersion := "3.2.2",
+    libraryDependencies ++= Seq(
+      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % "2.21.3",
+      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.21.3" % Provided
+    )
   )
 
 lazy val `plugin-sbt` = (project in file("plugin-sbt"))
-  .settings(commonSettings: _*)
+  .enablePlugins(SbtPlugin)
   .settings(
     name := s"$commonName-plugin-sbt",
-    Compile / unmanagedJars += (`plugin-generator` / Compile / packageBin).value,
+    organization := commonOrganization,
+    scalaVersion := "2.12.16",
+    Compile / unmanagedResources += (`plugin-generator` / assembly).value,
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %% "os-lib" % "0.9.1",
+      "com.softwaremill.sttp.client3" %% "core" % "3.8.13",
+      "com.softwaremill.sttp.client3" %% "jsoniter" % "3.8.13"
+    ),
     scriptedLaunchOpts := {
       scriptedLaunchOpts.value ++
         Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
@@ -80,28 +90,32 @@ lazy val `plugin-sbt` = (project in file("plugin-sbt"))
 
 lazy val sqlite = (project in file("sqlite"))
   .enablePlugins(PrismaPlugin)
-  .settings(commonSettings: _*)
   .settings(
-    name := s"$commonName-sqlite"
+    name := s"$commonName-sqlite",
+    organization := commonOrganization,
+    scalaVersion := "3.2.2",
   )
 
 lazy val postgres = (project in file("postgres"))
   .enablePlugins(PrismaPlugin)
-  .settings(commonSettings: _*)
   .settings(
-    name := s"$commonName-postgres"
+    name := s"$commonName-postgres",
+    organization := commonOrganization,
+    scalaVersion := "3.2.2",
   )
 
 lazy val mssql = (project in file("mssql"))
   .enablePlugins(PrismaPlugin)
-  .settings(commonSettings: _*)
   .settings(
-    name := s"$commonName-mssql"
+    name := s"$commonName-mssql",
+    organization := commonOrganization,
+    scalaVersion := "3.2.2",
   )
 
 lazy val mongodb = (project in file("mongodb"))
   .enablePlugins(PrismaPlugin)
-  .settings(commonSettings: _*)
   .settings(
-    name := s"$commonName-mongodb"
+    name := s"$commonName-mongodb",
+    organization := commonOrganization,
+    scalaVersion := "3.2.2",
   )
