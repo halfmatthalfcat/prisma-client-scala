@@ -26,7 +26,7 @@ object PrismaPlugin
   }
 
   override lazy val projectSettings: Seq[Def.Setting[?]] = super.projectSettings ++ Seq(
-    prismaOutDir := s"${(Compile / target).value.getAbsolutePath}/prisma",
+    prismaOutDir := s"${(Compile / sourceManaged).value.getAbsolutePath}/prisma",
     prisma := prismaGenerateTask.value,
   )
 }
