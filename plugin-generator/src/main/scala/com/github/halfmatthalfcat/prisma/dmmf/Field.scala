@@ -1,12 +1,11 @@
 package com.github.halfmatthalfcat.prisma.dmmf
 
-import scala.collection.mutable
-import com.github.plokhotnyuk.jsoniter_scala.core.{JsonReader, JsonValueCodec, JsonWriter}
-import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
+import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
+import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 
 case class Field(
   name: String,
-  kind: FieldKind,
+  kind: FieldKind.FieldKind,
   isList: Boolean,
   isRequired: Boolean,
   isUnique: Boolean,
@@ -24,7 +23,7 @@ case class Field(
   relationName: Option[String],
   documentation: Option[String],
 )
-object Field:
-  given JsonValueCodec[Field] = JsonCodecMaker.make
-end Field
 
+object Field {
+  implicit val codec: JsonValueCodec[Field] = JsonCodecMaker.make
+}

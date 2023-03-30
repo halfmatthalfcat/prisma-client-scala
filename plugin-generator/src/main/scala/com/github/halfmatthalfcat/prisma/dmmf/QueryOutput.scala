@@ -8,6 +8,6 @@ case class QueryOutput(
   isRequired: Boolean,
   isList: Boolean,
 )
-object QueryOutput:
-  given JsonValueCodec[QueryOutput] = JsonCodecMaker.make
-end QueryOutput
+object QueryOutput {
+  implicit val codec: JsonValueCodec[QueryOutput] = JsonCodecMaker.make
+}

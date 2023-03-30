@@ -7,6 +7,6 @@ case class EnvValue(
   fromEnvVar: Option[String],
   value: Option[String],
 )
-object EnvValue:
-  given JsonValueCodec[EnvValue] = JsonCodecMaker.make
-end EnvValue
+object EnvValue {
+  implicit val codec: JsonValueCodec[EnvValue] = JsonCodecMaker.make
+}

@@ -7,7 +7,7 @@ case class OtherOperationMappings(
   read: Seq[String],
   write: Seq[String],
 )
-object OtherOperationMappings:
-  given JsonValueCodec[OtherOperationMappings] = JsonCodecMaker.make
-end OtherOperationMappings
+object OtherOperationMappings {
+  implicit val codec: JsonValueCodec[OtherOperationMappings] = JsonCodecMaker.make
+}
 

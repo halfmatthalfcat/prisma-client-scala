@@ -8,6 +8,7 @@ case class Datamodel(
   enums: Seq[DatamodelEnum],
   types: Seq[Model],
 )
-object Datamodel:
-  given JsonValueCodec[Datamodel] = JsonCodecMaker.make
-end Datamodel
+
+object Datamodel {
+  implicit val codec: JsonValueCodec[Datamodel] = JsonCodecMaker.make
+}

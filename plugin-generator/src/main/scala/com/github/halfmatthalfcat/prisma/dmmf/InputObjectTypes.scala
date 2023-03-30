@@ -7,6 +7,6 @@ case class InputObjectTypes(
   model: Option[Seq[InputType]],
   prisma: Seq[InputType],
 )
-object InputObjectTypes:
-  given JsonValueCodec[InputObjectTypes] = JsonCodecMaker.make
-end InputObjectTypes
+object InputObjectTypes {
+  implicit val codec: JsonValueCodec[InputObjectTypes] = JsonCodecMaker.make
+}

@@ -8,6 +8,6 @@ case class OutputType(
   fields: Seq[SchemaField],
   fieldMap: Option[Map[String, SchemaField]]
 )
-object OutputType:
-  given JsonValueCodec[OutputType] = JsonCodecMaker.make
-end OutputType
+object OutputType {
+  implicit val codec: JsonValueCodec[OutputType] = JsonCodecMaker.make
+}

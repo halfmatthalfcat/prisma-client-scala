@@ -11,6 +11,6 @@ case class SchemaField(
   deprecation: Option[Deprecation],
   documentation: Option[String],
 )
-object SchemaField:
-  given JsonValueCodec[SchemaField] = JsonCodecMaker.make
-end SchemaField
+object SchemaField {
+  implicit val codec: JsonValueCodec[SchemaField] = JsonCodecMaker.make
+}

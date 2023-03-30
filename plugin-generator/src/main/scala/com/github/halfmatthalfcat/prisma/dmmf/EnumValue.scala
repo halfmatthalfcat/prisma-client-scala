@@ -7,6 +7,7 @@ case class EnumValue(
   name: String,
   dbName: Option[String],
 )
-object EnumValue:
-  given JsonValueCodec[EnumValue] = JsonCodecMaker.make
-end EnumValue
+
+object EnumValue {
+  implicit val codec: JsonValueCodec[EnumValue] = JsonCodecMaker.make
+}

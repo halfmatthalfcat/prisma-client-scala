@@ -7,7 +7,7 @@ case class Mappings(
   modelOperations: Seq[ModelMapping],
   otherOperations: OtherOperationMappings,
 )
-object Mappings:
-  given JsonValueCodec[Mappings] = JsonCodecMaker.make
-end Mappings
+object Mappings {
+  implicit val codec: JsonValueCodec[Mappings] = JsonCodecMaker.make
+}
 

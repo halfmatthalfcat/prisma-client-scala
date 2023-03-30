@@ -7,6 +7,6 @@ case class FieldRefTypes(
   model: Option[Seq[FieldRefType]],
   prisma: Option[Seq[FieldRefType]],
 )
-object FieldRefTypes:
-  given JsonValueCodec[FieldRefTypes] = JsonCodecMaker.make
-end FieldRefTypes
+object FieldRefTypes {
+  implicit val codec: JsonValueCodec[FieldRefTypes] = JsonCodecMaker.make
+}

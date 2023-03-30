@@ -12,7 +12,7 @@ case class Model(
   documentation: Option[String],
   primaryKey: Option[PrimaryKey],
 )
-object Model:
-  given JsonValueCodec[Model] = JsonCodecMaker.make
-end Model
+object Model {
+  implicit val codec: JsonValueCodec[Model] = JsonCodecMaker.make
+}
 

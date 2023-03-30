@@ -7,6 +7,7 @@ case class FieldDefault(
   name: String,
   args: Seq[FieldDefaultScalar]
 )
-object FieldDefault:
-  given JsonValueCodec[FieldDefault] = JsonCodecMaker.make
-end FieldDefault
+
+object FieldDefault {
+  implicit val codec: JsonValueCodec[FieldDefault] = JsonCodecMaker.make
+}

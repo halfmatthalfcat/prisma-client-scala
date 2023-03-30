@@ -11,6 +11,6 @@ case class SchemaArg(
   inputTypes: Seq[SchemaArgInputType],
   deprecation: Option[Deprecation]
 )
-object SchemaArg:
-  given JsonValueCodec[SchemaArg] = JsonCodecMaker.make
-end SchemaArg
+object SchemaArg {
+  implicit val codec: JsonValueCodec[SchemaArg] = JsonCodecMaker.make
+}

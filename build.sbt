@@ -9,16 +9,24 @@ val commonOrganization = "com.github.halfmatthalfcat"
 
 lazy val root = (project in file("."))
   .settings(name := commonName)
+  .aggregate(
+    `plugin-generator`,
+    `plugin-sbt`
+  )
 
 lazy val `plugin-generator` = (project in file("plugin-generator"))
   .enablePlugins(BuildInfoPlugin)
   .settings(
     name := s"$commonName-plugin-generator",
     organization := commonOrganization,
-    scalaVersion := "3.2.2",
+    scalaVersion := "2.13.10",
+    Compile / run / mainClass := Some("com.github.halfmatthalfcat.Generator"),
+    Compile / packageBin / mainClass := Some("com.github.halfmatthalfcat.Generator"),
+    assembly / mainClass := Some("com.github.halfmatthalfcat.Generator"),
     libraryDependencies ++= Seq(
       "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % "2.21.3",
-      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.21.3" % Provided
+      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.21.3" % Provided,
+      "org.scalameta" %% "scalameta" % "4.7.6",
     )
   )
 

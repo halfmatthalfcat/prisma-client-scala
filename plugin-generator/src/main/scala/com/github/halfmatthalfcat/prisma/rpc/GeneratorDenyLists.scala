@@ -7,6 +7,6 @@ case class GeneratorDenyLists(
   models: Option[Seq[String]] = None,
   fields: Option[Seq[String]] = None,
 )
-object GeneratorDenyLists:
-  given JsonValueCodec[GeneratorDenyLists] = JsonCodecMaker.make
-end GeneratorDenyLists
+object GeneratorDenyLists {
+  implicit val codec: JsonValueCodec[GeneratorDenyLists] = JsonCodecMaker.make
+}

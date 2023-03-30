@@ -15,6 +15,6 @@ case class GeneratorOptions(
   binaryPaths: Option[BinaryPaths],
   dataProxy: Boolean,
 )
-object GeneratorOptions:
-  given JsonValueCodec[GeneratorOptions] = JsonCodecMaker.make
-end GeneratorOptions
+object GeneratorOptions {
+  implicit val codec: JsonValueCodec[GeneratorOptions] = JsonCodecMaker.make
+}

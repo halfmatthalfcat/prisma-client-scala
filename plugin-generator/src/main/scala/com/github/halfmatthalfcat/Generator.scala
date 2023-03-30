@@ -1,6 +1,6 @@
 package com.github.halfmatthalfcat
 
-import com.github.halfmatthalfcat.prisma.rpc.*
+import com.github.halfmatthalfcat.prisma.rpc._
 import com.github.plokhotnyuk.jsoniter_scala.core.{JsonValueCodec, readFromString, writeToString}
 
 import scala.util.{Failure, Success, Try}
@@ -12,12 +12,13 @@ import scala.util.{Failure, Success, Try}
  */
 
 object Generator {
-  @main def run(): Unit = {
+
+  def main(args: Array[String]): Unit = {
     io
       .Source
       .stdin
       .getLines()
-      .map(str => Try(readFromString[RPCRequest[?]](str)))
+      .map(str => Try(readFromString[RPCRequest[_]](str)))
       .collect {
         case Success(req) => req
         case Failure(exception) => println(exception)
@@ -36,7 +37,7 @@ object Generator {
       }
   }
 
-  private def send(response: RPCResponse[?]): Unit = {
+  private def send[T: JsonValueCodec](response: T): Unit = {
     System.err.println(writeToString(response))
   }
 }

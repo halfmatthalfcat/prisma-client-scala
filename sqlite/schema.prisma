@@ -5,7 +5,7 @@ datasource db {
 
 // generator
 generator client {
-  provider = "java -jar /Users/matt/Code/prisma-client-scala/plugin-generator/target/scala-3.2.2/prisma-client-scala-plugin-generator-assembly-0.0.0-SNAPSHOT.jar"
+  provider = "java -jar /Users/matt/Code/prisma-client-scala/plugin-generator/target/scala-2.13/prisma-client-scala-plugin-generator-assembly-0.0.0-SNAPSHOT.jar"
 }
 
 model Post {
