@@ -11,18 +11,20 @@ case class SchemaEnum(
   name: String,
   values: Seq[String]
 ) extends ScalaGeneratable {
-  override val genImport: Seq[ScalaImport.Import] = Seq(
+  override val scala2Import: Seq[ScalaImport.Import] = Seq(
     JsoniterCore,
     JsoniterMacro,
   )
 
-  override def scala2(): Defn = {
+  override def scala2(withCodec: Boolean = false): Defn = {
     val pats = values.map(v => Pat.Var(Term.Name(v)))
+    val codec = scala2Codec().filter(_ => withCodec)
     q"""
        object ${Term.Name(name)} extends Enumeration {
          type ${Type.Name(name)} = Value
 
          val ..${pats.toList} = Value
+         ..$codec
        }
      """
   }
@@ -51,17 +53,19 @@ case class SchemaEnum(
      """)
   }
 
-  override def scala3(): Defn = {
+  override def scala3(withCodec: Boolean = false): Tree = {
     import scala.meta.dialects.Scala3
 
     val cases = Defn.RepeatedEnumCase(
       List.empty,
       values.map(v => Term.Name(v)).toList,
     )
-    q"""
+    val codec = scala3Codec().filter(_ => withCodec)
+    source"""
        enum ${Type.Name(name)} {
          $cases
        }
+       ..$codec
     """
   }
 
