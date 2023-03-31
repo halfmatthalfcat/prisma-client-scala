@@ -35,6 +35,7 @@ lazy val `plugin-generator` = (project in file("plugin-generator"))
     libraryDependencies ++= Seq(
       "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % "2.21.3",
       "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.21.3" % Provided,
+      "org.scalameta" %% "munit" % "0.7.29" % Test,
       "org.scalameta" %% "scalameta" % "4.7.6",
     )
   )
