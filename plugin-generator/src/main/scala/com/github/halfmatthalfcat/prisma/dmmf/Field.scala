@@ -15,7 +15,7 @@ case class Field(
   isUpdatedAt: Option[Boolean],
   hasDefaultValue: Boolean,
   dbNames: Option[Seq[String]],
-  `type`: String,
+  `type`: TypeKind,
   default: Option[FieldDefaultValue],
   relationFromFields: Option[Seq[String]],
   relationToFields: Option[Seq[String]],
