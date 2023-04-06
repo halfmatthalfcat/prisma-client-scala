@@ -1,11 +1,14 @@
 package com.github.halfmatthalfcat.prisma.scala
 
-import com.github.plokhotnyuk.jsoniter_scala.core.{JsonReader, JsonValueCodec, JsonWriter}
+import com.github.plokhotnyuk.jsoniter_scala.core.{JsonReader, JsonValueCodec, JsonWriter, readFromString, writeToString}
 
 import scala.collection.mutable
 
 sealed trait Json
 object Json {
+  type FromJson[T] = String => T
+  type ToJson[T] = T => String
+
   implicit val codec: JsonValueCodec[Json] = new JsonValueCodec[Json] {
     override def decodeValue(in: JsonReader, default: Json): Json = {
       val b = in.nextToken()
@@ -66,9 +69,31 @@ object Json {
   }
 }
 
-case class JsonObject(elements: Map[String, Json]) extends Json
+case class JsonObject(elements: Map[String, Json]) extends Json {
+  import Json._
 
-case class JsonArray(elements: Seq[Json]) extends Json
+  def to[T](implicit fromJson: FromJson[T]): T =
+    fromJson(writeToString[Json](this))
+}
+object JsonObject {
+  import Json._
+
+  def from[T](thing: T)(implicit toJson: ToJson[T]): JsonObject =
+    readFromString[Json](toJson(thing)).asInstanceOf[JsonObject]
+}
+
+case class JsonArray(elements: Seq[Json]) extends Json {
+  import Json._
+
+  def to[T](implicit fromJson: FromJson[T]): Seq[T] =
+    elements.map(el => fromJson(writeToString[Json](el)))
+}
+object JsonArray {
+  import Json._
+
+  def from[T](things: Seq[T])(implicit toJson: ToJson[T]): JsonArray =
+    JsonArray(things.map(thing => readFromString[Json](toJson(thing))))
+}
 
 case class JsonNumber(number: Int) extends Json
 object JsonNumber {

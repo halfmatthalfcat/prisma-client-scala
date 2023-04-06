@@ -1,6 +1,8 @@
 package com.github.halfmatthalfcat.prisma.scala
 
-import com.github.plokhotnyuk.jsoniter_scala.core.readFromString
+import com.github.halfmatthalfcat.prisma.scala.Json.{FromJson, ToJson}
+import com.github.plokhotnyuk.jsoniter_scala.core.{JsonValueCodec, readFromString, writeToString}
+import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 
 class JsonSuite extends munit.FunSuite {
   test("correctly deserializes a string") {
@@ -182,6 +184,158 @@ class JsonSuite extends munit.FunSuite {
           case _ => false
         }
       } yield first && second && third).getOrElse(false)
+      case _ => false
+    })
+  }
+
+  test("successfully convert string object to case class") {
+    case class A(a: String, b: Boolean, c: Int)
+    object A {
+      val codec: JsonValueCodec[A] = JsonCodecMaker.make
+      implicit val fromJson: FromJson[A] = readFromString[A](_)(codec)
+    }
+
+    val result = readFromString[Json](
+      s"""{
+         |  "a": "hello world",
+         |  "b": false,
+         |  "c": 123
+         |}""".stripMargin)
+
+    assert (result match {
+      case _: JsonObject => true
+      case _ => false
+    })
+
+    val convertedResult = result
+      .asInstanceOf[JsonObject]
+      .to[A]
+
+    assertEquals(
+      A("hello world", false, 123),
+      convertedResult,
+    )
+  }
+
+  test("successfully convert a case class into a JSON type") {
+    import Json._
+
+    case class A(a: String, b: Boolean, c: Int)
+    object A {
+      val codec: JsonValueCodec[A] = JsonCodecMaker.make
+      implicit val toJson: ToJson[A] = writeToString(_)(codec)
+    }
+
+    val json = JsonObject.from(A(
+      "hello world",
+      false,
+      123,
+    ))
+
+    assert (json match {
+      case JsonObject(elements) => (for {
+        a <- elements.get("a").map {
+          case JsonString(str) => str == "hello world"
+          case _ => false
+        }
+        b <- elements.get("b").map {
+          case JsonBool(bool) => !bool
+          case _ => false
+        }
+        c <- elements.get("c").map {
+          case JsonNumber(number) => number == 123
+          case _ => false
+        }
+      } yield a && b && c).getOrElse(false)
+      case _ => false
+    })
+  }
+
+  test("successfully convert an array string to a seq of case classes") {
+    case class A(a: String, b: Boolean, c: Int)
+    object A {
+      val codec: JsonValueCodec[A] = JsonCodecMaker.make
+      implicit val fromJson: FromJson[A] = readFromString[A](_)(codec)
+    }
+
+    val result = readFromString[Json](
+      s"""[{
+         |  "a": "hello world",
+         |  "b": false,
+         |  "c": 123
+         |}, {
+         |  "a": "hello world again",
+         |  "b": true,
+         |  "c": 456
+         |}]""".stripMargin)
+
+    assert(result match {
+      case _: JsonArray => true
+      case _ => false
+    })
+
+    val convertedResult = result
+      .asInstanceOf[JsonArray]
+      .to[A]
+
+    assertEquals(
+      Seq(
+        A("hello world", false, 123),
+        A("hello world again", true, 456),
+      ),
+      convertedResult,
+    )
+  }
+
+  test("successfully convert a seq of case classes into a JSON type") {
+    case class A(a: String, b: Boolean, c: Int)
+    object A {
+      val codec: JsonValueCodec[A] = JsonCodecMaker.make
+      implicit val toJson: ToJson[A] = writeToString(_)(codec)
+    }
+
+    val json = JsonArray.from(Seq(
+      A("hello world", false, 123),
+      A("hello world again", true, 456),
+    ))
+
+    assert (json match {
+      case JsonArray(elements) => (for {
+        first <- elements.headOption.map {
+          case JsonObject(elements) => (for {
+            a <- elements.get("a").map {
+              case JsonString(str) => str == "hello world"
+              case _ => false
+            }
+            b <- elements.get("b").map {
+              case JsonBool(bool) => !bool
+              case _ => false
+            }
+            c <- elements.get("c").map {
+              case JsonNumber(number) => number == 123
+              case _ => false
+            }
+          } yield a && b && c).getOrElse(false)
+          case _ => false
+        }
+        second <- elements.lift(1).map {
+          case JsonObject(elements) => (for {
+            a <- elements.get("a").map {
+              case JsonString(str) => str == "hello world again"
+              case _ => false
+            }
+            b <- elements.get("b").map {
+              case JsonBool(bool) => bool
+              case _ => false
+            }
+            c <- elements.get("c").map {
+              case JsonNumber(number) => number == 456
+              case _ => false
+            }
+          } yield a && b && c).getOrElse(false)
+          case _ => false
+        }
+      } yield first && second).getOrElse(false)
       case _ => false
     })
   }
