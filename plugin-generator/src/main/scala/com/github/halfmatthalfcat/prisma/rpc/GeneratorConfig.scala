@@ -12,5 +12,6 @@ case class GeneratorConfig(
   binaryTargets: Option[Seq[EnvValue]] = None,
   previewFeatures: Option[Seq[String]] = None
 )
-object GeneratorConfig:
-  given JsonValueCodec[GeneratorConfig] = JsonCodecMaker.make
+object GeneratorConfig {
+  implicit val codec: JsonValueCodec[GeneratorConfig] = JsonCodecMaker.make
+}

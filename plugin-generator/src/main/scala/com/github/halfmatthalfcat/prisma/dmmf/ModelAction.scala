@@ -2,41 +2,61 @@ package com.github.halfmatthalfcat.prisma.dmmf
 
 import com.github.plokhotnyuk.jsoniter_scala.core.{JsonReader, JsonValueCodec, JsonWriter}
 
-// @see https://github.com/prisma/prisma/blob/4.11.0/packages/generator-helper/src/dmmf.ts#L241
-enum ModelAction(val action: String):
-  case FindUnique extends ModelAction("findUnique")
-  case FindUniqueOrThrow extends ModelAction("findUniqueOrThrow")
-  case FindFirst extends ModelAction("findFirst")
-  case FindFirstOrThrow extends ModelAction("findFirstOrThrow")
-  case FindMany extends ModelAction("findMany")
-  case Create extends ModelAction("create")
-  case CreateMany extends ModelAction("createMany")
-  case Update extends ModelAction("update")
-  case UpdateMany extends ModelAction("updateMany")
-  case Upsert extends ModelAction("upsert")
-  case Delete extends ModelAction("delete")
-  case DeleteMany extends ModelAction("deleteMany")
-  case GroupBy extends ModelAction("groupBy")
-  case Count extends ModelAction("count")
-  case Aggregate extends ModelAction("aggregate")
-  case FindRaw extends ModelAction("findRaw")
-  case AggregateRaw extends ModelAction("aggregateRaw")
-end ModelAction
+sealed abstract class ModelAction(val action: String)
+object ModelAction {
+  private val values = Seq(
+    FindUnique,
+    FindUniqueOrThrow,
+    FindFirst,
+    FindFirstOrThrow,
+    FindMany,
+    Create,
+    CreateMany,
+    Update,
+    UpdateMany,
+    Upsert,
+    Delete,
+    DeleteMany,
+    GroupBy,
+    Count,
+    Aggregate,
+    FindRaw,
+    AggregateRaw,
+  )
 
-given JsonValueCodec[ModelAction] = new JsonValueCodec[ModelAction]:
-  override def decodeValue(in: JsonReader, default: ModelAction): ModelAction = {
-    val b = in.nextToken()
-    if (b == '"') {
-      in.rollbackToken()
-      val str = in.readString(null)
-      ModelAction.values.find(_.action == str).getOrElse(
-        in.decodeError("expected ModelAction")
-      )
-    } else in.decodeError("expected ModelAction")
+  case object FindUnique extends ModelAction("findUnique")
+  case object FindUniqueOrThrow extends ModelAction("findUniqueOrThrow")
+  case object FindFirst extends ModelAction("findFirst")
+  case object FindFirstOrThrow extends ModelAction("findFirstOrThrow")
+  case object FindMany extends ModelAction("findMany")
+  case object Create extends ModelAction("create")
+  case object CreateMany extends ModelAction("createMany")
+  case object Update extends ModelAction("update")
+  case object UpdateMany extends ModelAction("updateMany")
+  case object Upsert extends ModelAction("upsert")
+  case object Delete extends ModelAction("delete")
+  case object DeleteMany extends ModelAction("deleteMany")
+  case object GroupBy extends ModelAction("groupBy")
+  case object Count extends ModelAction("count")
+  case object Aggregate extends ModelAction("aggregate")
+  case object FindRaw extends ModelAction("findRaw")
+  case object AggregateRaw extends ModelAction("aggregateRaw")
+
+  implicit val codec: JsonValueCodec[ModelAction] = new JsonValueCodec[ModelAction] {
+    override def decodeValue(in: JsonReader, default: ModelAction): ModelAction = {
+      val b = in.nextToken()
+      if (b == '"') {
+        in.rollbackToken()
+        val str = in.readString(null)
+        values.find(_.action == str).getOrElse(
+          in.enumValueError("expected ModelAction")
+        )
+      } else in.decodeError("expected ModelAction")
+    }
+
+    override def encodeValue(x: ModelAction, out: JsonWriter): Unit =
+      out.writeVal(x.action)
+
+    override def nullValue: ModelAction = null.asInstanceOf[ModelAction]
   }
-
-  override def encodeValue(x: ModelAction, out: JsonWriter): Unit =
-    out.writeVal(x.action)
-
-  override def nullValue: ModelAction = null
-end given
+}

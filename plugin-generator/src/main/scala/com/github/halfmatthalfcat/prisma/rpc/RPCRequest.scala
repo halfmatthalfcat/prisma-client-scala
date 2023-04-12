@@ -1,22 +1,22 @@
 package com.github.halfmatthalfcat.prisma.rpc
 
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.*
+import com.github.plokhotnyuk.jsoniter_scala.macros._
 
 sealed abstract class RPCRequest[T: JsonValueCodec](
   jsonrpc: String = "2.0",
   id: Int,
   params: T
 )
-object RPCRequest:
-  given JsonValueCodec[RPCRequest[?]] = JsonCodecMaker.make(
+object RPCRequest {
+  implicit val codec: JsonValueCodec[RPCRequest[_]] = JsonCodecMaker.make(
     CodecMakerConfig
       .withDiscriminatorFieldName(Some("method"))
       .withRequireDiscriminatorFirst(false)
       .withTransientDefault(false)
       .withTransientEmpty(false)
   )
-end RPCRequest
+}
 
 @named("getManifest") case class GeneratorConfigRequest(
   id: Int,

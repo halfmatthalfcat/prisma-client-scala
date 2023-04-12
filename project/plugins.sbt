@@ -26,12 +26,21 @@ lazy val root = (project in file(".")).dependsOn(`plugin-sbt`)
 lazy val `plugin-generator` = (project in file("plugin-generator"))
   .enablePlugins(BuildInfoPlugin)
   .settings(
-    scalaVersion := "3.2.2",
+    scalaVersion := "2.13.10",
+    Compile / run / mainClass := Some("com.github.halfmatthalfcat.Generator"),
+    Compile / packageBin / mainClass := Some("com.github.halfmatthalfcat.Generator"),
+    assembly / mainClass := Some("com.github.halfmatthalfcat.Generator"),
+    assembly / assemblyJarName := s"generator.jar",
     Compile / unmanagedSourceDirectories :=
       mirrorScalaSource((ThisBuild / baseDirectory).value.getParentFile / "plugin-generator"),
     libraryDependencies ++= Seq(
       "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % "2.21.3",
-      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.21.3" % Provided
+      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.21.3" % Provided,
+      "com.github.scopt" %% "scopt" % "4.1.0",
+      "com.lihaoyi" %% "os-lib" % "0.7.7",
+      "org.scalameta" %% "munit" % "0.7.29" % Test,
+      "org.scalameta" %% "scalameta" % "4.7.6",
+      "org.scalameta" %% "scalafmt-core" % "3.7.3"
     )
   )
 
@@ -40,7 +49,7 @@ lazy val `plugin-sbt` = (project in file("plugin-sbt"))
   .settings(
     scalaVersion := "2.12.16",
     sbtPlugin := true,
-    Compile / unmanagedResources += (`plugin-generator` / assembly).value,
+    Compile / managedResources += (`plugin-generator` / assembly).value,
     Compile / unmanagedSourceDirectories :=
       mirrorScalaSource((ThisBuild / baseDirectory).value.getParentFile / "plugin-sbt"),
     libraryDependencies ++= Seq(

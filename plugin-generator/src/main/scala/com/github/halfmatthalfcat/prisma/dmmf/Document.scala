@@ -8,6 +8,7 @@ case class Document(
   schema: Schema,
   mappings: Mappings,
 )
-object Document:
-  given JsonValueCodec[Document] = JsonCodecMaker.make
-end Document
+
+object Document {
+  implicit val codec: JsonValueCodec[Document] = JsonCodecMaker.make
+}

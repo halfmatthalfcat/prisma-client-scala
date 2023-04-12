@@ -7,6 +7,7 @@ case class EnumTypes(
   model: Option[Seq[SchemaEnum]],
   prisma: Seq[SchemaEnum],
 )
-object EnumTypes:
-  given JsonValueCodec[EnumTypes] = JsonCodecMaker.make
-end EnumTypes
+
+object EnumTypes {
+  implicit val codec: JsonValueCodec[EnumTypes] = JsonCodecMaker.make
+}

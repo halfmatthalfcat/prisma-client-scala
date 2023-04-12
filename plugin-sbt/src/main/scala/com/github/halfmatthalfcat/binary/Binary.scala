@@ -25,7 +25,7 @@ trait Binary {
       ".gz"
     }
 
-  def ensure()(
+  def ensure(
     implicit
     config: PrismaConfiguration,
     logger: Logger,

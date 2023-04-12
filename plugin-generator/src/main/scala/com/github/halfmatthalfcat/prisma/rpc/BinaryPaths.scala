@@ -8,6 +8,6 @@ case class BinaryPaths(
   queryEngine: Option[Map[String, String]],
   libqueryEngine: Option[Map[String, String]],
 )
-object BinaryPaths:
-  given JsonValueCodec[BinaryPaths] = JsonCodecMaker.make
-end BinaryPaths
+object BinaryPaths {
+  implicit val codec: JsonValueCodec[BinaryPaths] = JsonCodecMaker.make
+}

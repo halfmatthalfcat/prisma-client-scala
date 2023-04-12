@@ -8,6 +8,7 @@ case class Deprecation(
   reason: String,
   plannedRemovalVersion: Option[String]
 )
-object Deprecation:
-  given JsonValueCodec[Deprecation] = JsonCodecMaker.make
-end Deprecation
+
+object Deprecation {
+  implicit val codec: JsonValueCodec[Deprecation] = JsonCodecMaker.make
+}

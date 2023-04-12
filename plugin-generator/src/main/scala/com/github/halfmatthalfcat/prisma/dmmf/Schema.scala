@@ -11,6 +11,6 @@ case class Schema(
   enumTypes: EnumTypes,
   fieldRefTypes: FieldRefTypes,
 )
-object Schema:
-  given JsonValueCodec[Schema] = JsonCodecMaker.make
-end Schema
+object Schema {
+  implicit val codec: JsonValueCodec[Schema] = JsonCodecMaker.make
+}

@@ -4,17 +4,18 @@ import com.github.halfmatthalfcat.PrismaConfiguration
 import sbt.Logger
 
 trait Binaries {
-  lazy val query = EngineBinary("query-engine")
-  lazy val migration = EngineBinary("migration-engine")
-  lazy val introspection = EngineBinary("introspection-engine")
-  lazy val fmt = EngineBinary("prisma-fmt")
+  implicit val query: QueryEngineBinary.type = QueryEngineBinary
+  implicit val migration: MigrationEngineBinary.type = MigrationEngineBinary
+  implicit val introspection: IntrospectionEngineBinary.type = IntrospectionEngineBinary
+  implicit val format: FormatBinary.type = FormatBinary
+  implicit val cli: CLIBinary.type = CLIBinary
 
   private[this] val binaries = Seq(
     query,
     migration,
     introspection,
-    fmt,
-    CLIBinary
+    format,
+    cli,
   )
 
   def ensureBinaries()(
@@ -24,7 +25,7 @@ trait Binaries {
   ): Boolean = {
     val binaryCount = binaries
       .toIterator
-      .map(_.ensure())
+      .map(_.ensure)
       .takeWhile(_.nonEmpty)
       .toList
       .size

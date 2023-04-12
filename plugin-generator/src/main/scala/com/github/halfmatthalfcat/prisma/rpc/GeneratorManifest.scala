@@ -6,9 +6,9 @@ import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 case class GeneratorManifestResponse(
   manifest: GeneratorManifest
 )
-object GeneratorManifestResponse:
-  given JsonValueCodec[GeneratorManifestResponse] = JsonCodecMaker.make
-end GeneratorManifestResponse
+object GeneratorManifestResponse {
+  implicit val codec: JsonValueCodec[GeneratorManifestResponse] = JsonCodecMaker.make
+}
 
 case class GeneratorManifest(
   prettyName: String,
@@ -16,12 +16,12 @@ case class GeneratorManifest(
   defaultOutput: Option[String] = None,
   denylists: Option[GeneratorDenyLists] = None,
   requiresGenerators: Option[Seq[String]] = None,
-  requiresEngines: Option[Seq[EngineType]] = None,
+  requiresEngines: Option[Seq[EngineType.type]] = None,
   requresEngineVersion: Option[String] = None,
 ) {
   def asResponse: GeneratorManifestResponse = 
     GeneratorManifestResponse(this)
 }
-object GeneratorManifest:
-  given JsonValueCodec[GeneratorManifest] = JsonCodecMaker.make
-end GeneratorManifest
+object GeneratorManifest {
+  implicit val codec: JsonValueCodec[GeneratorManifest] = JsonCodecMaker.make
+}

@@ -7,6 +7,6 @@ case class PrimaryKey(
   name: Option[String],
   fields: Seq[String],
 )
-object PrimaryKey:
-  given JsonValueCodec[PrimaryKey] = JsonCodecMaker.make
-end PrimaryKey
+object PrimaryKey {
+  implicit val codec: JsonValueCodec[PrimaryKey] = JsonCodecMaker.make
+}

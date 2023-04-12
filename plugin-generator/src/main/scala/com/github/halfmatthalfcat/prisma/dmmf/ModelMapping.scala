@@ -25,6 +25,6 @@ case class ModelMapping(
   findRaw: Option[String],
   aggregateRaw: Option[String],
 )
-object ModelMapping:
-  given JsonValueCodec[ModelMapping] = JsonCodecMaker.make
-end ModelMapping
+object ModelMapping {
+  implicit val codec: JsonValueCodec[ModelMapping] = JsonCodecMaker.make
+}

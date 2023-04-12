@@ -11,6 +11,6 @@ case class DataSource(
   directUrl: Option[EnvValue],
   schemas: Seq[String]
 )
-object DataSource:
-  given JsonValueCodec[DataSource] = JsonCodecMaker.make
-end DataSource
+object DataSource {
+  implicit val codec: JsonValueCodec[DataSource] = JsonCodecMaker.make
+}

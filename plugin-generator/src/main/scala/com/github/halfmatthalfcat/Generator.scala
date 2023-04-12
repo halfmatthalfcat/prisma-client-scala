@@ -1,7 +1,12 @@
 package com.github.halfmatthalfcat
 
-import com.github.halfmatthalfcat.prisma.rpc.*
+import com.github.halfmatthalfcat.config.Config
+import com.github.halfmatthalfcat.prisma.rpc._
+import com.github.halfmatthalfcat.prisma.scala.ModelConversion
 import com.github.plokhotnyuk.jsoniter_scala.core.{JsonValueCodec, readFromString, writeToString}
+import org.scalafmt.Scalafmt._
+import os.Path
+import scopt.OParser
 
 import scala.util.{Failure, Success, Try}
 
@@ -12,31 +17,46 @@ import scala.util.{Failure, Success, Try}
  */
 
 object Generator {
-  @main def run(): Unit = {
-    io
-      .Source
-      .stdin
-      .getLines()
-      .map(str => Try(readFromString[RPCRequest[?]](str)))
-      .collect {
-        case Success(req) => req
-        case Failure(exception) => println(exception)
-      }
-      .foreach {
-        case genReq: GeneratorConfigRequest => send(GeneratorConfigResponse(
-          id = genReq.id,
-          result = GeneratorManifest(
-            prettyName = buildinfo.BuildInfo.name,
-            version = buildinfo.BuildInfo.version,
-            defaultOutput = Some("/Users/matt/Code/prisma-client-scala/plugin-generator/target/scala-3.2.2/src_managed/main/prisma")
-          ).asResponse
-        ))
-        case manReq: ManifestRequest =>
-          sys.exit()
-      }
+
+  def main(args: Array[String]): Unit = OParser.parse(Config.argParser, args, Config()) match {
+    case Some(config) => listen(config)
+    case _ => sys.exit(1)
   }
 
-  private def send(response: RPCResponse[?]): Unit = {
+  private def listen(config: Config): Unit = io
+    .Source
+    .stdin
+    .getLines()
+    .map(str => Try(readFromString[RPCRequest[_]](str)))
+    .collect {
+      case Success(req) => req
+      case Failure(_) => sys.exit(1)
+    }
+    .foreach {
+      case genReq: GeneratorConfigRequest => send(GeneratorConfigResponse(
+        id = genReq.id,
+        result = GeneratorManifest(
+          prettyName = buildinfo.BuildInfo.name,
+          version = buildinfo.BuildInfo.version,
+          defaultOutput = Some(config.output)
+        ).asResponse
+      ))
+      case manReq: ManifestRequest =>
+        val models = manReq
+          .params
+          .dmmf
+          .datamodel
+          .models
+          .map(ModelConversion.getModel)
+          .map(_.syntax)
+          .map(syntax => format(syntax).get)
+          .mkString("\n")
+        os.makeDir.all(Path(config.output))
+        os.write.over(Path(s"${config.output}/Prisma.scala"), models)
+        sys.exit()
+    }
+
+  private def send[T: JsonValueCodec](response: T): Unit = {
     System.err.println(writeToString(response))
   }
 }

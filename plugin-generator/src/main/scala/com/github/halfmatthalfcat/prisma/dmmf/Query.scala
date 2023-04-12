@@ -8,6 +8,6 @@ case class Query(
   args: Seq[SchemaArg],
   output: QueryOutput
 )
-object Query:
-  given JsonValueCodec[Query] = JsonCodecMaker.make
-end Query
+object Query {
+  implicit val codec: JsonValueCodec[Query] = JsonCodecMaker.make
+}

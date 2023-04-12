@@ -8,16 +8,16 @@ case class InputTypeConstraints(
   minNumFields: Option[Int],
   fields: Option[String],
 )
-object InputTypeConstraints:
-  given JsonValueCodec[InputTypeConstraints] = JsonCodecMaker.make
-end InputTypeConstraints
+object InputTypeConstraints {
+  implicit val codec: JsonValueCodec[InputTypeConstraints] = JsonCodecMaker.make
+}
 
 case class InputTypeMeta(
   source: Option[String],
 )
-object InputTypeMeta:
-  given JsonValueCodec[InputTypeMeta] = JsonCodecMaker.make
-end InputTypeMeta
+object InputTypeMeta {
+  implicit val codec: JsonValueCodec[InputTypeMeta] = JsonCodecMaker.make
+}
 
 case class InputType(
   name: String,
@@ -26,7 +26,7 @@ case class InputType(
   fields: Seq[SchemaArg],
   fieldMap: Option[Map[String, SchemaArg]]
 )
-object InputType:
-  given JsonValueCodec[InputType] = JsonCodecMaker.make
-end InputType
+object InputType {
+  implicit val codec: JsonValueCodec[InputType] = JsonCodecMaker.make
+}
 

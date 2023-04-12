@@ -7,6 +7,7 @@ case class SchemaEnum(
   name: String,
   values: Seq[String]
 )
-object SchemaEnum:
-  given JsonValueCodec[SchemaEnum] = JsonCodecMaker.make
-end SchemaEnum
+
+object SchemaEnum {
+  implicit val codec: JsonValueCodec[SchemaEnum] = JsonCodecMaker.make
+}
