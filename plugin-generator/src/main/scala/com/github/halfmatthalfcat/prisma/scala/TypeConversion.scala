@@ -4,7 +4,7 @@ import com.github.halfmatthalfcat.prisma.dmmf.TypeKind
 
 import scala.meta._
 
-object TypeConversions {
+object TypeConversion {
   def typeKindToType(kind: TypeKind): Type = kind match {
     case TypeKind.Boolean => t"Boolean"
     case TypeKind.String | TypeKind.ID => t"String"

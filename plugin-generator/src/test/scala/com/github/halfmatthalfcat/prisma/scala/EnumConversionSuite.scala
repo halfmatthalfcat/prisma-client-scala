@@ -1,14 +1,14 @@
-package com.github.halfmatthalfcat.prisma.dmmf
+package com.github.halfmatthalfcat.prisma.scala
 
-import com.github.halfmatthalfcat.prisma.scala.{Scala2, Scala3, ScalaGenVersion}
+import com.github.halfmatthalfcat.prisma.dmmf.SchemaEnum
 
-class SchemaEnumSuite extends munit.FunSuite {
+class EnumConversionSuite extends munit.FunSuite {
   test("produce a valid Scala 2 enum") {
     implicit val version: ScalaGenVersion = Scala2
     val schemaEnum = SchemaEnum("Test", Seq("A", "B", "C"))
 
     assertEquals(
-      schemaEnum.code.syntax,
+      EnumConversion.code(schemaEnum).syntax,
       """object Test extends Enumeration {
         |  type Test = Value
         |  val A, B, C = Value
@@ -21,7 +21,7 @@ class SchemaEnumSuite extends munit.FunSuite {
     val schemaEnum = SchemaEnum("Test", Seq("A", "B", "C"))
 
     assertEquals(
-      schemaEnum.codec.syntax,
+      EnumConversion.codec(schemaEnum).syntax,
       """import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
         |import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
         |implicit val codec: JsonValueCodec[Test] = new JsonValueCodec[Test] {
@@ -44,7 +44,7 @@ class SchemaEnumSuite extends munit.FunSuite {
     val schemaEnum = SchemaEnum("Test", Seq("A", "B", "C"))
 
     assertEquals(
-      schemaEnum.code.syntax,
+      EnumConversion.code(schemaEnum).syntax,
       """enum Test { case A, B, C }"""
     )
   }
@@ -54,7 +54,7 @@ class SchemaEnumSuite extends munit.FunSuite {
     val schemaEnum = SchemaEnum("Test", Seq("A", "B", "C"))
 
     assertEquals(
-      schemaEnum.codec.syntax,
+      EnumConversion.codec(schemaEnum).syntax,
       """import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
         |import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
         |given JsonValueCodec[Test] = new JsonValueCodec[Test] {

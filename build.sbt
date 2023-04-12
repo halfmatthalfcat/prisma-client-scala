@@ -15,7 +15,7 @@ lazy val root = (project in file("."))
   )
 
 lazy val `plugin-generator` = (project in file("plugin-generator"))
-  .enablePlugins(BuildInfoPlugin)
+  .enablePlugins(BuildInfoPlugin, AssemblyPlugin)
   .settings(
     name := s"$commonName-plugin-generator",
     organization := commonOrganization,
@@ -23,11 +23,15 @@ lazy val `plugin-generator` = (project in file("plugin-generator"))
     Compile / run / mainClass := Some("com.github.halfmatthalfcat.Generator"),
     Compile / packageBin / mainClass := Some("com.github.halfmatthalfcat.Generator"),
     assembly / mainClass := Some("com.github.halfmatthalfcat.Generator"),
+    assembly / assemblyJarName := s"generator.jar",
     libraryDependencies ++= Seq(
       "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % "2.21.3",
       "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.21.3" % Provided,
+      "com.github.scopt" %% "scopt" % "4.1.0",
+      "com.lihaoyi" %% "os-lib" % "0.7.7",
       "org.scalameta" %% "munit" % "0.7.29" % Test,
       "org.scalameta" %% "scalameta" % "4.7.6",
+      "org.scalameta" %% "scalafmt-core" % "3.7.3"
     )
   )
 
@@ -37,7 +41,7 @@ lazy val `plugin-sbt` = (project in file("plugin-sbt"))
     name := s"$commonName-plugin-sbt",
     organization := commonOrganization,
     scalaVersion := "2.12.16",
-    Compile / unmanagedResources += (`plugin-generator` / assembly).value,
+    Compile / managedResources += (`plugin-generator` / assembly).value,
     libraryDependencies ++= Seq(
       "com.lihaoyi" %% "os-lib" % "0.9.1",
       "com.softwaremill.sttp.client3" %% "core" % "3.8.13",

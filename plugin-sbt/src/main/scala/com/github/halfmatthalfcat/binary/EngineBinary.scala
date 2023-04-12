@@ -2,8 +2,8 @@ package com.github.halfmatthalfcat.binary
 
 import com.github.halfmatthalfcat.PrismaConfiguration
 
-import sys.process.*
-import os.*
+import sys.process._
+import os._
 import com.github.halfmatthalfcat.util.Profile
 import sbt.Logger
 import sttp.client3.{asFile, basicRequest}
@@ -13,7 +13,7 @@ import java.io.{File, FileInputStream}
 import java.util.concurrent.TimeUnit
 import java.util.zip.GZIPInputStream
 
-case class EngineBinary(name: String) extends Binary {
+abstract class EngineBinary(name: String) extends Binary {
   private[this] lazy val idRegex = """(?m)^ID="?([^"\n]*)"?""".r
   private[this] lazy val idLikeRegex = """(?m)^ID_LIKE="?([^"\n]*)"?""".r
 
@@ -42,12 +42,22 @@ case class EngineBinary(name: String) extends Binary {
     implicit config: PrismaConfiguration
   ): String = s"${config.engineUrl}/${config.engineVersion}/$platform/$name${getBinaryUrlExt(platform)}"
 
-  private[this] def getDestPath(platform: String)(
+  private[this] def getBinPath(platform: String)(
     implicit config: PrismaConfiguration
-  ): String = s"${config.outDir}/${config.engineVersion}/prisma-$name-$platform"
+  ): String = s"${config.resourcesDir}/prisma/${config.engineVersion}/prisma-$name-$platform"
 
+  def binPath(
+    implicit
+    config: PrismaConfiguration,
+  ): String = {
+    val platform = getPlatform match {
+      case "linux" => findLinuxDistro()
+      case other => other
+    }
+    getBinPath(platform)
+  }
 
-  def ensure()(
+  def ensure(
     implicit
     config: PrismaConfiguration,
     logger: Logger,
@@ -56,7 +66,7 @@ case class EngineBinary(name: String) extends Binary {
       case "linux" => findLinuxDistro()
       case other => other
     }
-    val uncompressedDestPath = getDestPath(platform)
+    val uncompressedDestPath = binPath
     val compressedDestPath = s"$uncompressedDestPath${getBinaryUrlExt(platform)}"
 
     val exists = os.exists(Path(uncompressedDestPath))
@@ -79,6 +89,7 @@ case class EngineBinary(name: String) extends Binary {
             Path(uncompressedDestPath),
             new GZIPInputStream(new FileInputStream(file))
           ))
+          os.perms.set(Path(uncompressedDestPath), "r-xr-xr-x")
           os.remove(Path(compressedDestPath))
           logger.debug(s"[prisma] Successfully uncompressed binary $name (${TimeUnit.NANOSECONDS.toMillis(uncompressNs)}ms)")
           Some(new File(uncompressedDestPath))

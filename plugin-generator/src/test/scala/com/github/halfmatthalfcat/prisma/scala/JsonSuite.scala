@@ -5,7 +5,7 @@ import com.github.plokhotnyuk.jsoniter_scala.core.{JsonValueCodec, readFromStrin
 import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 
 class JsonSuite extends munit.FunSuite {
-  test("correctly deserializes a string") {
+  test("deserializes a string") {
     val result = readFromString[Json]("\"hello world\"")
     assert (result match {
       case JsonString(str) => str == "hello world"
@@ -13,7 +13,7 @@ class JsonSuite extends munit.FunSuite {
     })
   }
 
-  test("correctly deserializes an int") {
+  test("deserializes an int") {
     val result = readFromString[Json]("12345")
     assert (result match {
       case JsonNumber(number) => number == 12345
@@ -21,7 +21,7 @@ class JsonSuite extends munit.FunSuite {
     })
   }
 
-  test("correctly deserializes a bool") {
+  test("deserializes a bool") {
     val tResult = readFromString[Json]("true")
     val fResult = readFromString[Json]("false")
 
@@ -36,7 +36,7 @@ class JsonSuite extends munit.FunSuite {
     })
   }
 
-  test("correctly deserializes null") {
+  test("deserializes null") {
     val result = readFromString[Json]("null")
 
     assert (result match {
@@ -45,7 +45,7 @@ class JsonSuite extends munit.FunSuite {
     })
   }
 
-  test("correctly deserializes an arbitrary object") {
+  test("deserializes an arbitrary object") {
     val result = readFromString[Json]("{\"a\":123,\"b\":false}")
 
     assert (result match {
@@ -63,7 +63,7 @@ class JsonSuite extends munit.FunSuite {
     })
   }
 
-  test("correctly deserializes an arbitrary array") {
+  test("deserializes an arbitrary array") {
     val result = readFromString[Json]("[1, false, \"hello world\"]")
 
     assert (result match {
@@ -85,7 +85,7 @@ class JsonSuite extends munit.FunSuite {
     })
   }
 
-  test("correctly deserializes a complex object") {
+  test("deserializes a complex object") {
     val result = readFromString[Json](
       s"""{
          |  "a": 123,
@@ -142,7 +142,7 @@ class JsonSuite extends munit.FunSuite {
     })
   }
 
-  test("correctly deserializes a complex array") {
+  test("deserializes a complex array") {
     val result = readFromString[Json](
       s"""[
          | { "a": 1, "b": 2, "c": false },
@@ -188,7 +188,7 @@ class JsonSuite extends munit.FunSuite {
     })
   }
 
-  test("successfully convert string object to case class") {
+  test("convert string object to case class") {
     case class A(a: String, b: Boolean, c: Int)
     object A {
       val codec: JsonValueCodec[A] = JsonCodecMaker.make
@@ -217,7 +217,7 @@ class JsonSuite extends munit.FunSuite {
     )
   }
 
-  test("successfully convert a case class into a JSON type") {
+  test("convert a case class into a JSON type") {
     import Json._
 
     case class A(a: String, b: Boolean, c: Int)
@@ -251,7 +251,7 @@ class JsonSuite extends munit.FunSuite {
     })
   }
 
-  test("successfully convert an array string to a seq of case classes") {
+  test("convert an array string to a seq of case classes") {
     case class A(a: String, b: Boolean, c: Int)
     object A {
       val codec: JsonValueCodec[A] = JsonCodecMaker.make
@@ -287,7 +287,7 @@ class JsonSuite extends munit.FunSuite {
     )
   }
 
-  test("successfully convert a seq of case classes into a JSON type") {
+  test("convert a seq of case classes into a JSON type") {
     case class A(a: String, b: Boolean, c: Int)
     object A {
       val codec: JsonValueCodec[A] = JsonCodecMaker.make

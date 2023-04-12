@@ -2,18 +2,53 @@ package com.github.halfmatthalfcat.prisma.dmmf
 
 import com.github.plokhotnyuk.jsoniter_scala.core.{JsonReader, JsonValueCodec, JsonWriter}
 
-object ModelAction extends Enumeration {
-  private type ModelAction = Value
-  
-  protected case class ModelActionVal(action: String) extends super.Val
-  implicit def valueToModelActionVal(x: Value): ModelActionVal = x.asInstanceOf[ModelActionVal]
+sealed abstract class ModelAction(val action: String)
+object ModelAction {
+  private val values = Seq(
+    FindUnique,
+    FindUniqueOrThrow,
+    FindFirst,
+    FindFirstOrThrow,
+    FindMany,
+    Create,
+    CreateMany,
+    Update,
+    UpdateMany,
+    Upsert,
+    Delete,
+    DeleteMany,
+    GroupBy,
+    Count,
+    Aggregate,
+    FindRaw,
+    AggregateRaw,
+  )
+
+  case object FindUnique extends ModelAction("findUnique")
+  case object FindUniqueOrThrow extends ModelAction("findUniqueOrThrow")
+  case object FindFirst extends ModelAction("findFirst")
+  case object FindFirstOrThrow extends ModelAction("findFirstOrThrow")
+  case object FindMany extends ModelAction("findMany")
+  case object Create extends ModelAction("create")
+  case object CreateMany extends ModelAction("createMany")
+  case object Update extends ModelAction("update")
+  case object UpdateMany extends ModelAction("updateMany")
+  case object Upsert extends ModelAction("upsert")
+  case object Delete extends ModelAction("delete")
+  case object DeleteMany extends ModelAction("deleteMany")
+  case object GroupBy extends ModelAction("groupBy")
+  case object Count extends ModelAction("count")
+  case object Aggregate extends ModelAction("aggregate")
+  case object FindRaw extends ModelAction("findRaw")
+  case object AggregateRaw extends ModelAction("aggregateRaw")
+
   implicit val codec: JsonValueCodec[ModelAction] = new JsonValueCodec[ModelAction] {
     override def decodeValue(in: JsonReader, default: ModelAction): ModelAction = {
       val b = in.nextToken()
       if (b == '"') {
         in.rollbackToken()
         val str = in.readString(null)
-        ModelAction.values.find(_.action == str).getOrElse(
+        values.find(_.action == str).getOrElse(
           in.enumValueError("expected ModelAction")
         )
       } else in.decodeError("expected ModelAction")
@@ -24,22 +59,4 @@ object ModelAction extends Enumeration {
 
     override def nullValue: ModelAction = null.asInstanceOf[ModelAction]
   }
-  
-  val FindUnique: ModelActionVal = ModelActionVal("findUnique")
-  val FindUniqueOrThrow: ModelActionVal = ModelActionVal("findUniqueOrThrow")
-  val FindFirst: ModelActionVal = ModelActionVal("findFirst")
-  val FindFirstOrThrow: ModelActionVal = ModelActionVal("findFirstOrThrow")
-  val FindMany: ModelActionVal = ModelActionVal("findMany")
-  val Create: ModelActionVal = ModelActionVal("create")
-  val CreateMany: ModelActionVal = ModelActionVal("createMany")
-  val Update: ModelActionVal = ModelActionVal("update")
-  val UpdateMany: ModelActionVal = ModelActionVal("updateMany")
-  val Upsert: ModelActionVal = ModelActionVal("upsert")
-  val Delete: ModelActionVal = ModelActionVal("delete")
-  val DeleteMany: ModelActionVal = ModelActionVal("deleteMany")
-  val GroupBy: ModelActionVal = ModelActionVal("groupBy")
-  val Count: ModelActionVal = ModelActionVal("count")
-  val Aggregate: ModelActionVal = ModelActionVal("aggregate")
-  val FindRaw: ModelActionVal = ModelActionVal("findRaw")
-  val AggregateRaw: ModelActionVal = ModelActionVal("aggregateRaw")
 }

@@ -6,4 +6,7 @@ case class PrismaConfiguration(
   cliUrl: String = "https://packaged-cli.prisma.sh",
   engineUrl: String = "https://binaries.prisma.sh/all_commits",
   outDir: String,
+  schemaFile: String,
+  resourcesDir: String,
+  scalaVersion: ScalaVersion,
 )

@@ -1,10 +1,10 @@
 package com.github.halfmatthalfcat.prisma.dmmf
 
-import com.github.plokhotnyuk.jsoniter_scala.core.{JsonReader, JsonValueCodec, JsonWriter}
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
+import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
+import com.github.plokhotnyuk.jsoniter_scala.macros.{JsonCodecMaker, named}
 
 case class FieldDefault(
-  name: String,
+  @named("name") kind: FieldDefaultKind,
   args: Seq[FieldDefaultScalar]
 )
 

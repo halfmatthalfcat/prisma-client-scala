@@ -54,7 +54,7 @@ object IsArgTypeSchemaEnum {
 case class SchemaArgInputType(
   `type`: ArgType,
   namespace: Option[String],
-  location: FieldLocation.FieldLocation,
+  location: FieldLocation,
   isList: Boolean,
 )
 object SchemaArgInputType {

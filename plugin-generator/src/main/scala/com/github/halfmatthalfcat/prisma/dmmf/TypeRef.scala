@@ -5,7 +5,7 @@ import com.github.plokhotnyuk.jsoniter_scala.macros._
 
 sealed trait TypeRef {
   val isList: Boolean
-  val namespace: Option[FieldNamespace.FieldNamespace]
+  val namespace: Option[FieldNamespace]
 }
 object TypeRef {
   implicit val codec: JsonValueCodec[TypeRef] = JsonCodecMaker.make(CodecMakerConfig
@@ -15,7 +15,7 @@ object TypeRef {
 
 @named("scalar") case class TypeRefScalar(
   isList: Boolean,
-  namespace: Option[FieldNamespace.FieldNamespace],
+  namespace: Option[FieldNamespace],
   `type`: String,
 ) extends TypeRef
 object TypeRefScalar {
@@ -24,13 +24,13 @@ object TypeRefScalar {
 
 @named("outputObjectTypes") case class TypeRefOutputObject(
   isList: Boolean,
-  namespace: Option[FieldNamespace.FieldNamespace],
+  namespace: Option[FieldNamespace],
   `type`: OutputObjectType
 ) extends TypeRef
 
 @named("enumTypes") case class TypeRefEnum(
   isList: Boolean,
-  namespace: Option[FieldNamespace.FieldNamespace],
+  namespace: Option[FieldNamespace],
   `type`: EnumType
 ) extends TypeRef
 object TypeRefEnum {

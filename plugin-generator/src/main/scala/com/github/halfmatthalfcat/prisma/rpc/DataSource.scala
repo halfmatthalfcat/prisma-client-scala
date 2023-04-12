@@ -5,8 +5,8 @@ import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 
 case class DataSource(
   name: String,
-  provider: ConnectorType.Value,
-  activeProvider: ConnectorType.Value,
+  provider: ConnectorType,
+  activeProvider: ConnectorType,
   url: EnvValue,
   directUrl: Option[EnvValue],
   schemas: Seq[String]
